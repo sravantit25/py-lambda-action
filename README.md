@@ -1,4 +1,4 @@
-# Deploy specific directories to specific lambdas using python-lambda
+# Deploy specific directories to specific lambdas
 
 This workflow builds on top of the excellent: https://github.com/mariamrf/py-lambda-action. It lets you deploy a specific directories to specific lambdas. 
 
