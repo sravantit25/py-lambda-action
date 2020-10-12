@@ -1,11 +1,13 @@
-# py-lambda-action
+# Deploy specific directories to specific lambdas using python-lambda
 
-[![GitHubActions](https://img.shields.io/badge/listed%20on-GitHubActions-blue.svg)](https://github-actions.netlify.com/py-lambda)
+This workflow builds on top of the excellent: https://github.com/mariamrf/py-lambda-action. It lets you deploy a specific directories to specific lambdas. 
 
-A Github Action to deploy AWS Lambda functions written in Python with their dependencies in a separate layer. For now, only works with Python 3.6. PRs welcome.
+## Background
+
+The GitHub action `mariamrf/py-lambda-action` does a good job of packaging our lambda and dependencies and deploying it to AWS. However, it assumes that there is exactly one lambda per repo. The way [Qxf2](https://qxf2.com/?utm_source=py-lambda-action&utm_medium=click&utm_campaign=From%20GitHub) have organized our lambdas is different. We have one repo and we place one directory per lambda inside the repo. This makes using this GitHub action difficult. 
 
 ## Use
-Deploys everything in the repo as code to the Lambda function, and installs/zips/deploys the dependencies as a separate layer the function can then immediately use.
+Deploys everything in the specified directory within the repo as code to the Lambda function, and installs/zips/deploys the dependencies as a separate layer the function can then immediately use.
 
 ### Pre-requisites
 In order for the Action to have access to the code, you must use the `actions/checkout@master` job before it. See the example below.
@@ -27,31 +29,39 @@ Stored as secrets or env vars, doesn't matter. But also please don't put your AW
     - Function name - `my-function`  
     - Function ARN - `arn:aws:lambda:us-west-2:123456789012:function:my-function`  
     - Partial ARN - `123456789012:function:my-function`
+- `lambda_directory`
+    The directory with the lambda code
 - `requirements_txt`
     The name/path for the `requirements.txt` file. Defaults to `requirements.txt`.
+
+__Implementation__
+1. I added a `lambda_directory` input argument to `action.yml`. 
+2. Then, in `entrypoint.sh`, in the method `publish_function_code()` method, I added a `cd "${INPUT_LAMBDA_DIRECTORY}"` line just before we zip up the code.
+3. I tagged this as v1.0.2
 
 
 ### Example workflow
 ```yaml
-name: deploy-py-lambda
+name: deploy-dummy-lambda
 on:
   push:
     branches:
-      - master
+      - lambda-deploy-action
+    paths:
+      - 'dummy_lambda/**'
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@master
     - name: Deploy code to Lambda
-      uses: mariamrf/py-lambda-action@v1.0.0
+      uses: qxf2/py-lambda-action@v1.0.2
       with:
-        lambda_layer_arn: 'arn:aws:lambda:us-east-2:123456789012:layer:my-layer'
-        lambda_function_name: 'my-function'
+        lambda_directory: 'dummy_lambda'
+        lambda_function_name: arn:aws:lambda:ap-south-1:285993504765:function:dummyLambda
+        requirements_txt: 'dummy_lambda/requirements.txt'
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-east-2'
-
+        AWS_DEFAULT_REGION: ${{ secrets.SKYPE_SENDER_REGION }} 
 ```
