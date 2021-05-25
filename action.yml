@@ -19,11 +19,6 @@ inputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.directory }}
-    - ${{ inputs.requirements_txt }}
-    - ${{ inputs.lambda_layer_arn }}
-    - ${{ inputs.lambda_function_name }}
 branding:
   icon: 'layers'
   color: 'yellow'
