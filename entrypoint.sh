@@ -30,8 +30,7 @@ update_function_layers(){
 deploy_lambda_function(){
 	install_zip_dependencies
 	publish_dependencies_as_layer
-	[ ! -z "${INPUT_LAMBDA_DIRECTORY}" ] && publish_function_code
-	update_function_layers
+	[ ! -z "${INPUT_LAMBDA_FUNCTION_NAME}" ] && publish_function_code && update_function_layers
 }
 
 deploy_lambda_function
