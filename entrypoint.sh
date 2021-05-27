@@ -7,6 +7,7 @@ install_zip_dependencies(){
 	zip -r dependencies.zip ./python
 
 	if [ -z "${INPUT_LAMBDA_FUNCTION_NAME}" ]
+	then
 		zip -r dependencies.zip "${INPUT_LAMBDA_DIRECTORY}" -x \*.git\*
 	fi
 }
