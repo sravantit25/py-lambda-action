@@ -5,6 +5,10 @@ install_zip_dependencies(){
 	mkdir python
 	pip install --target=python -r "${INPUT_REQUIREMENTS_TXT}"
 	zip -r dependencies.zip ./python
+
+	if [ -z "${INPUT_LAMBDA_FUNCTION_NAME}" ]
+		zip -r dependencies.zip "${INPUT_LAMBDA_DIRECTORY}" -x \*.git\*
+	fi
 }
 
 publish_dependencies_as_layer(){
