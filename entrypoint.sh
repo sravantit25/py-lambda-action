@@ -7,8 +7,8 @@ install_zip_dependencies(){
 
 	if [ -z "${INPUT_LAMBDA_FUNCTION_NAME}" ]
 	then
-		cp -R "${INPUT_LAMBDA_DIRECTORY}" ./python
-		rm -rf ./python/"${INPUT_LAMBDA_DIRECTORY}"/.git*
+		cp -R "${INPUT_LAMBDA_DIRECTORY}/*" ./python
+		rm -rf ./python/.git*
 	fi
 	zip -r dependencies.zip ./python
 }
